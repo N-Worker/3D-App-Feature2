@@ -1,0 +1,138 @@
+{
+    "name": "Input",
+    "maps": [
+        {
+            "name": "CameraInput",
+            "id": "f2cbfc2e-0f1f-4cb8-b7a2-f358cc96d874",
+            "actions": [
+                {
+                    "name": "Movement",
+                    "type": "PassThrough",
+                    "id": "39d23249-beab-4180-af8d-5dacfbdbef46",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleRotateMovement",
+                    "type": "PassThrough",
+                    "id": "233b00f4-10d3-4de9-8be6-4b0e899cc77b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold(duration=0.1)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleCameraMovement",
+                    "type": "PassThrough",
+                    "id": "54e4b1e2-310b-489c-8092-cfef88cccd06",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold(duration=0.1)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Zoom",
+                    "type": "PassThrough",
+                    "id": "e973a102-d705-44f9-abe9-67ac1c2ec926",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "2D Vector",
+                    "id": "0f550e43-68c7-4cd7-90d9-878c6043b6d7",
+                    "path": "2DVector(mode=2)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "9fa559da-b6d3-46d2-9bcb-729e79d67fe2",
+                    "path": "<Mouse>/delta/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "ddaed2c9-a44d-4621-9022-ae063a9bcb6e",
+                    "path": "<Mouse>/delta/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "fefc1d88-799c-4c46-b829-7994afcc2d85",
+                    "path": "<Mouse>/delta/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "1024360f-1798-4df8-9a36-5ab9493baf05",
+                    "path": "<Mouse>/delta/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "247853d5-dad0-4dac-be29-478b05824039",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleRotateMovement",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d000b924-f4a5-4fbb-b152-216e29a05a9d",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "Clamp(min=-1,max=1)",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ea3eddd8-f359-4226-b01d-93457649d499",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "Hold(duration=0.15)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleCameraMovement",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
