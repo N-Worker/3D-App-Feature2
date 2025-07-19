@@ -105,30 +105,26 @@ public class TableManager : MonoBehaviour
         _AutoScaleModel(instance);
         _CenterModel(instance);
 
-        //============== Add WireframeRenderer (GL.Line) ===============
-        // ใส่ WireframeDrawer.cs อัตโนมัติ
-        //if (instance.GetComponent<WireframeRenderer>() == null)
-        //{
-        //    WireframeRenderer drawer = instance.AddComponent<WireframeRenderer>();
-        //    drawer.lineColor = Color.white; // หรือปรับสีตามต้องการ
-        //}
-        //============== Add WireframeRenderer ===============
+        //============== Add BaseColorModel and WireframeToggle ===============
+        // Add BaseColorModel ถ้ายังไม่มี
+        var ui = GameManager.Instance?.uiManager?.turnTableOption;
 
-        //============== Add WireframeToggle ===============
-        if (instance.GetComponent<WireframeToggle>() == null)
-        {
-            WireframeToggle toggle = instance.AddComponent<WireframeToggle>();
-            toggle.wireframeMaterial = _uI_TurnTableOption.wireframeMaterial; // ดึงจาก UI
-            toggle.SetWireframe(_uI_TurnTableOption.toggleWireframe.isOn); // เปิด/ปิดตาม UI
-            
-            // ป้องกัน null
-            if (_uI_TurnTableOption != null && _uI_TurnTableOption.wireframeMaterial != null)
-                toggle.wireframeMaterial = _uI_TurnTableOption.wireframeMaterial;
-        }
-        //============== Add WireframeToggle ===============
+        // Add BaseColorModel + เปิด/ปิดตาม toggle
+        var baseColor = instance.GetComponent<BaseColorModel>() ?? instance.AddComponent<BaseColorModel>();
+        baseColor.SetBaseColor(ui?.toggleBaseColor?.isOn ?? false);
+
+        // Add WireframeToggle + เปิด/ปิดตาม toggle
+        var wireframe = instance.GetComponent<WireframeToggle>() ?? instance.AddComponent<WireframeToggle>();
+        wireframe.SetWireframe(ui?.toggleWireframe?.isOn ?? false);
+        //============== Add BaseColorModel and WireframeToggle ===============
 
         return instance;
     }
+    public GameObject GetCurrentModel()
+    {
+        return modelInfo.Find(i => i.index == currentIndex).model;
+    }
+
     private void _TrimOldModels()
     {
         int removeIndex = _modelQueue[0];
@@ -205,26 +201,24 @@ public class TableManager : MonoBehaviour
         _CreateInstanceModel(currentIndex);
         _uI_ModelCatalogs.ModelCatalogsUI();
 
-        //============== UpdateModelName Text ================
-        // อัปเดตชื่อโมเดลใน StickerDropSlot
-        if (StickerDropSlot.Instance != null)
-        {
-            string modelName = _uIManager.currentModelName.text;
-            StickerDropSlot.Instance.UpdateModelName(modelName);
-        }
-        //============== UpdateModelName Text ================
 
-        //============== Wireframe UI ================
-        //เพิ่มตรงนี้ให้ UI ควบคุม Wireframe ใหม่ด้วย
-        var turnTableUI = GameManager.Instance.uiManager.turnTableOption;
-        if (turnTableUI != null)
-        {
-            turnTableUI.ToggleWireframe(); // sync toggle กับโมเดลใหม่
-        }
-        //============== Wireframe UI ================
+        //============== Update ================
+        // อัปเดตชื่อโมเดลใน StickerDropSlot
+        StickerDropSlot.Instance?.UpdateModelName(_uIManager.currentModelName.text);
+        //เปลี่ยนจากเรียกตรง ๆ เป็น Coroutine ที่ดีเลย์ 1 frame
+        StartCoroutine(_DelayedSyncToggles()); 
+        //============== Update ================
 
     }
     #endregion
+
+    // Coroutine _DelayedSyncToggles
+    private System.Collections.IEnumerator _DelayedSyncToggles()
+    {
+        yield return null; // รอ 1 frame
+        _uI_TurnTableOption?.SyncTogglesToModel();
+    }
+
 }
 #region Stucture
 [System.Serializable]

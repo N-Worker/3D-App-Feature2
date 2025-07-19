@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
@@ -17,17 +17,26 @@ public class UI_TurnTableOption : MonoBehaviour
     public Slider rotateSpeed;
     public TMP_Text rotateSpeedValueText;
 
-    //============== Wireframe UI ================
+    //============== ฟังก์ชัน ToggleWireframe() และ ToggleBaseColor() ================
     [Header("Wireframe Option")]
-    public Toggle toggleWireframe; // ���� Toggle Wireframe ���� Inspector
+    public Toggle toggleWireframe; // เพิ่ม Toggle Wireframe นี้ใน Inspector
     public Material wireframeMaterial;
+
+    [Header("BaseColor")]
+    public Toggle toggleBaseColor;
+    public Shader unlitShader;
+
+    [Space]
+    public WarningMessageUI warningUI;
+    private bool isUpdatingToggles = false; // ป้องกันลูปเรียกซ้ำ
 
     private void Start()
     {
-        toggleWireframe.onValueChanged.AddListener(delegate { ToggleWireframe(); });
-        ToggleWireframe();
+        toggleWireframe.onValueChanged.AddListener(OnToggleWireframeChanged);
+        toggleBaseColor.onValueChanged.AddListener(OnToggleBaseColorChanged);
+        SyncTogglesToModel();
     }
-    //============== Wireframe UI ================
+    //============== ฟังก์ชัน ToggleWireframe() และ ToggleBaseColor() ================
 
     public void RotatePerModelValueChanged()
     {
@@ -46,27 +55,54 @@ public class UI_TurnTableOption : MonoBehaviour
         rotateSpeedGO.SetActive(toggleRotate.isOn);
     }
 
-    //============== Wireframe UI ================
-    public void ToggleWireframe()
+    //============== ฟังก์ชัน ToggleWireframe() และ ToggleBaseColor() ================
+    public void SyncTogglesToModel()
     {
-        //============== Add WireframeRenderer (GL.Line) ===============
-        //    bool enable = toggleWireframe.isOn;
-        //    WireframeRenderer[] wireframes = FindObjectsOfType<WireframeRenderer>();
-        //    foreach (var wf in wireframes) wf.showWireframe = enable;
-        //============== Add WireframeRenderer (GL.Line) ===============
+        var model = GameManager.Instance.tableManager.GetCurrentModel();
+        if (model == null) return;
 
-        var tableManager = GameManager.Instance.tableManager;
-        if (tableManager == null) return;
+        // Sync Wireframe
+        model.GetComponent<WireframeToggle>()?.SetWireframe(toggleWireframe.isOn);
 
-        GameObject currentModel = tableManager.modelInfo.Find(i => i.index == tableManager.currentIndex).model;
-        if (currentModel == null) return;
-
-        WireframeToggle toggle = currentModel.GetComponent<WireframeToggle>();
-        if (toggle != null)
-        {
-            toggle.SetWireframe(toggleWireframe.isOn);
-        }
+        // Sync BaseColor — เพิ่มบรรทัดนี้เพื่อให้โมเดลใหม่อัพเดตสถานะตาม Toggle ปัจจุบันทันที
+        model.GetComponent<BaseColorModel>()?.SetBaseColor(toggleBaseColor.isOn);
     }
-    //============== Wireframe UI ================
+
+    private void OnToggleWireframeChanged(bool isOn)
+    {
+        if (isUpdatingToggles) return;
+
+        // ถ้า BaseColor ยังเปิดอยู่ → ห้ามเปิด Wireframe
+        if (isOn && toggleBaseColor.isOn)
+        {
+            isUpdatingToggles = true;
+            toggleWireframe.isOn = false; // ปิดกลับ
+            isUpdatingToggles = false;
+
+            warningUI.ShowMessage("Close Base Color Before Open Wireframe");
+            return;
+        }
+
+        SyncTogglesToModel();
+    }
+
+    private void OnToggleBaseColorChanged(bool isOn)
+    {
+        if (isUpdatingToggles) return;
+
+        // ถ้า Wireframe ยังเปิดอยู่ → ห้ามเปิด BaseColor
+        if (isOn && toggleWireframe.isOn)
+        {
+            isUpdatingToggles = true;
+            toggleBaseColor.isOn = false; // ปิดกลับ
+            isUpdatingToggles = false;
+
+            warningUI.ShowMessage("Close Wireframe Before Open Base Color");
+            return;
+        }
+
+        SyncTogglesToModel();
+    }
+    //============== ฟังก์ชัน ToggleWireframe() และ ToggleBaseColor() ================
 
 }
