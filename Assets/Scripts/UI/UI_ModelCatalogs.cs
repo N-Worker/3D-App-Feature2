@@ -13,9 +13,20 @@ public class UI_ModelCatalogs : MonoBehaviour
     public TMP_Text currentPageText;
     public Button prevPageButton;
 
+    //======================ModelSearchFilter=========================
+    [Header("Search")]
+    public TMP_InputField searchInputField;
+    //======================ModelSearchFilter=========================
+
     #region Variables
     private int _currentPage = 0;
     private int _modelsPerPage = 12;
+
+    //======================ModelSearchFilter=========================
+    private string _searchKeyword = "";
+    private List<GameObject> _filteredModels = new List<GameObject>();
+    //======================ModelSearchFilter=========================
+
     #endregion
 
     #region References
@@ -30,7 +41,12 @@ public class UI_ModelCatalogs : MonoBehaviour
 
         _ButtonSetUp();
 
-        ModelCatalogsUI();
+        //======================ModelSearchFilter=========================
+        searchInputField.onValueChanged.AddListener(OnSearchValueChanged);
+        _RefreshSearchResults();
+        //======================ModelSearchFilter=========================
+
+        //ModelCatalogsUI();
     }
     private void _InitializeReferences()
     {
@@ -47,7 +63,7 @@ public class UI_ModelCatalogs : MonoBehaviour
     }
     public void ModelCatalogsUI()
     {
-        int totalModels = _storage.models.Count;
+        int totalModels = _filteredModels.Count; //เปลี่ยนจาก  _storage.models.Count;
         int startIndex = _currentPage * _modelsPerPage;
         int currentIndex = _tableManager.currentIndex;
 
@@ -56,7 +72,7 @@ public class UI_ModelCatalogs : MonoBehaviour
         for (int i = 0; i < _modelsPerPage && startIndex + i < totalModels; i++)
         {
             int modelIndex = startIndex + i;
-            var storage = _storage.models[modelIndex];
+            var storage = _filteredModels[modelIndex];//เปลี่ยนจาก _storage.models
             var button = modelCatalogButtons[i];
             button.gameObject.SetActive(true);
 
@@ -64,9 +80,11 @@ public class UI_ModelCatalogs : MonoBehaviour
             if (text != null) text.text = storage.name;
 
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => _OnModelSelected(modelIndex));
+                                                //เปลี่ยนจาก _OnModelSelected(modelIndex));
+            button.onClick.AddListener(() => _OnModelSelected(_storage.models.IndexOf(storage))); 
 
-            button.interactable = (modelIndex != currentIndex);
+                                   //เปลี่ยนจาก (modelIndex != currentIndex);
+            button.interactable = (_storage.models.IndexOf(storage) != currentIndex); 
         }
 
         prevPageButton.interactable = _currentPage > 0;
@@ -88,6 +106,22 @@ public class UI_ModelCatalogs : MonoBehaviour
         currentPageText.text = (_currentPage + 1).ToString();
         ModelCatalogsUI();
     }
+
+    //======================ModelSearchFilter=========================
+    private void _RefreshSearchResults()
+    {
+        _filteredModels = ModelSearchFilter.Filter(_storage.models, _searchKeyword);
+        _currentPage = 0;
+        ModelCatalogsUI();//move from Start
+    }
+
+    private void OnSearchValueChanged(string keyword)
+    {
+        _searchKeyword = keyword;
+        _RefreshSearchResults();
+    }
+    //======================ModelSearchFilter=========================
+
 }
 
 

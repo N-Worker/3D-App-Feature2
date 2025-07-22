@@ -35,6 +35,8 @@ public class CameraManager : MonoBehaviour
     private Transform _cam;
     #endregion
 
+    private UIToolbarController _toolbarController;
+
     #region Unity Main Methods
     private void Start()
     {
@@ -66,6 +68,8 @@ public class CameraManager : MonoBehaviour
         _tableManager = _gameManager.tableManager;
         _uIManager = _gameManager.uiManager;
         _uI_turnTableOption = _uIManager.turnTableOption;
+
+
     }
 
     #region Camera Control Method
@@ -116,6 +120,21 @@ public class CameraManager : MonoBehaviour
             _resumeRotationCoroutine = null;
             _getManualRotate = true;
             _isRotateBack = false;
+
+            //======================== UIToolbarControlle r=============================
+            // เช็กว่าโมเดลถูกโหลดก่อนจึงจะเปิดการใช้งานซ่อน UI
+            if (_tableManager.currentIndex != -1)
+            {
+                UIToolbarController.Instance?.ShowToolbars(false);
+            }
+
+            if (_inputManager.toggleRotateMovement == 1)
+            {
+                _RotateCamera(_inputManager.movement);
+                _tableManager.toggleRotate = false;
+            }
+            //======================== UIToolbarControlle r=============================
+
         }
         else if (_getManualRotate && _resumeRotationCoroutine == null && !_isRotateBack && _uI_turnTableOption.autoResetCamera.isOn)
         {
@@ -149,6 +168,12 @@ public class CameraManager : MonoBehaviour
             _isRotateBack = false;
             _tableManager.toggleRotate = true;
             _tableManager.totalRotation = 0f;
+
+            //======================== UIToolbarControlle r=============================
+            if (_tableManager.currentIndex != -1)
+                UIToolbarController.Instance?.ShowToolbars(true); // แสดงตอนจบ
+            //======================== UIToolbarControlle r=============================
+
         }
 
         var euler = _cam.rotation.eulerAngles;
@@ -156,4 +181,6 @@ public class CameraManager : MonoBehaviour
         horizontal = euler.y > 180 ? euler.y - 360 : euler.y;
     }
     #endregion
+
+
 }

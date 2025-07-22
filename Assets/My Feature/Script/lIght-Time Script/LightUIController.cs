@@ -5,19 +5,11 @@ using UnityEngine.UI;
 
 public class LightUIController : MonoBehaviour
 {
-    //[Header("Rot")]
-    //public Slider sliderRotX;
-    //public Slider sliderRotY;
-
+  
     [Header("Light")]
     public Slider sliderInner;
     public Slider sliderOuter;
     public Slider sliderIntensity;
-
-    //[Header("Pos")]
-    //public Slider sliderPosX;
-    //public Slider sliderPosY;
-    //public Slider sliderPosZ;
 
     [Header("ควบคุมไฟรอบจุดศูนย์กลาง")]
     public Slider sliderYaw;   // ซ้าย-ขวา
@@ -41,15 +33,6 @@ public class LightUIController : MonoBehaviour
 
         spotLightTarget = light;
         target = light.transform;
-
-        // โหลดค่าเริ่มต้นจาก Light ไปยัง UI
-        //Vector3 rot = target.eulerAngles;
-        //sliderRotX.value = rot.x;
-        //sliderRotY.value = rot.y;
-
-        //sliderPosX.value = target.position.x;
-        //sliderPosY.value = target.position.y;
-        //sliderPosZ.value = target.position.z;
 
         // คำนวณมุมจากตำแหน่งจริงของไฟ
         Vector3 direction = (target.position - centerObject.position).normalized;
@@ -101,30 +84,6 @@ public class LightUIController : MonoBehaviour
         //ให้หันกลับเข้าศูนย์กลางเสมอ
         target.LookAt(centerObject.position);
         
-        /*
-        // หมุน
-        float x = sliderRotX.value;
-        float y = sliderRotY.value;
-        target.rotation = Quaternion.Euler(x, y, 0f);
-
-        // คำนวณตำแหน่งใหม่แบบหมุนรอบศูนย์กลาง
-        float angleDeg = sliderAngleAroundCenter.value;
-        float angleRad = angleDeg * Mathf.Deg2Rad;
-        Vector3 offset = new Vector3(Mathf.Cos(angleRad), 0, Mathf.Sin(angleRad)) * radius;
-
-        target.position = centerObject.position + offset;
-
-        // หันกลับเข้าจุดศูนย์กลาง
-        //target.LookAt(centerObject.position);
-
-        // ตำแหน่ง XYZ
-        Vector3 pos = target.position;
-        pos.x = sliderPosX.value;
-        pos.y = sliderPosY.value;
-        pos.z = sliderPosZ.value;
-        target.position = pos;       
-        */
-
         // Spot Light Angle
         if (spotLightTarget.type == LightType.Spot)
         {

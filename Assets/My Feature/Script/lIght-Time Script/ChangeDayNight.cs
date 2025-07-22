@@ -24,6 +24,11 @@ public class ChangeDayNight : MonoBehaviour
     public Material skyboxNight;
     public Material skyboxSunset;
 
+    [Header("Background Type Camera")]
+    public Camera targetCamera;
+    public Color solidColor = Color.gray;
+    public bool useSkybox = false;
+
     private int currentState = 0; // 0 = Day, 1 = Dusk, 2 = Night
 
     //private bool isNight = false;
@@ -78,18 +83,20 @@ public class ChangeDayNight : MonoBehaviour
                 if (skyboxNight != null) RenderSettings.skybox = skyboxNight;
                 break;
         }
+    }
+    public void OnValidate()
+    {
+        if (targetCamera == null) return;
 
-        //if (isNight)
-        //{
-        //    directionalLight.color = nightColor;
-        //    directionalLight.intensity = nightIntensity;
-        //    directionalLight.transform.rotation = Quaternion.Euler(nightRotation);
-        //}
-        //else
-        //{
-        //    directionalLight.color = dayColor;
-        //    directionalLight.intensity = dayIntensity;
-        //    directionalLight.transform.rotation = Quaternion.Euler(dayRotation);
-        //}
+        if (!Application.isPlaying) return; // เช็กว่าอยู่ในโหมดเล่นอยู่
+        if (useSkybox)
+        {
+            targetCamera.clearFlags = CameraClearFlags.Skybox;
+        }
+        else
+        {
+            targetCamera.clearFlags = CameraClearFlags.SolidColor;
+            targetCamera.backgroundColor = solidColor;
+        }
     }
 }

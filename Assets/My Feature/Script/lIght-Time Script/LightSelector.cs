@@ -91,6 +91,29 @@ public class LightSelector : MonoBehaviour
             }
         }
     }
+    public void ResetLightsToDefault()
+    {
+        ArrangeLightsInCircle(); // คืนตำแหน่งดวงไฟแบบวงกลม
+
+        for (int i = 0; i < lightList.Length; i++)
+        {
+            Light light = lightList[i];
+            if (light == null) continue;
+
+            // คืนค่าคุณสมบัติของไฟ
+            light.color = Color.white;
+            light.intensity = 10f;
+            light.range = 10f;
+            light.spotAngle = 45f;
+
+            // หันกลับเข้าศูนย์กลาง
+            light.transform.LookAt(centerObject.position);
+        }
+
+        // ถ้าต้องการอัปเดต UI ด้วย
+        SelectLightByIndex(0); // โหลดดวงแรกไปยัง UI Controller
+    }
+
     //public void ToggleLightOnOff(int index)
     //{
     //    if (index >= 0 && index < lightList.Length)
